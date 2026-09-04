@@ -1,0 +1,63 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+    <!-- Page metadata and global stylesheets -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Saragoza</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/scene.css">
+</head>
+<body>
+
+<!-- Site header: logo, burger toggle and main navigation -->
+<header class="site-header">
+    <!-- Brand mark -->
+    <div class="logo-mark">
+        <img class="logo" src="./assets/logo_saragoza.svg" alt="Saragoza">
+    </div>
+
+    <!-- Mobile menu state handled in CSS with :checked -->
+    <input class="nav-toggle" id="nav-toggle" type="checkbox">
+    <label class="nav-burger" for="nav-toggle" aria-label="Ouvrir le menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </label>
+
+    <!-- Main navigation actions -->
+    <nav class="nav-actions" aria-label="Navigation principale">
+        <button class="nav-button">
+            Présentation
+            <span class="button-effect"></span>
+        </button>
+        <button class="nav-button">
+            Concept
+            <span class="button-effect"></span>
+        </button>
+        <button class="nav-button">
+            Pathologies
+            <span class="button-effect"></span>
+        </button>
+        <button class="nav-button">
+            Témoignages
+            <span class="button-effect"></span>
+        </button>
+        <button class="nav-button nav-button--cta">
+            Prendre rendez-vous
+            <span class="button-effect"></span>
+        </button>
+    </nav>
+</header>
+
+<!-- Hero scene: animated SVG loaded as an external object -->
+<section class="hero-banner">
+    <object id="scene-object" data="assets/scene.svg" type="image/svg+xml" aria-label="Scene SVG"></object>
+</section>
+
+<!-- Animation libraries and page behavior -->
+<script src="vendor/gsap/gsap.min.js"></script>
+<script src="vendor/gsap/ScrollTrigger.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

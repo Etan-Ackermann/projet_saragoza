@@ -1,0 +1,352 @@
+/* ============================================================
+   BASE
+   Reglages globaux de la page.
+   ============================================================ */
+
+@font-face {
+    font-family: "Catamaran";
+    src: url("../assets/catamaran.ttf") format("truetype");
+}
+
+:root {
+    --cycle-duration: 50s;
+    --page-bg: #FCEDCF;
+    --header-day-bg: rgba(1, 140, 148, 0.3);
+    --header-sunset-bg: rgba(251, 140, 145, 0.3);
+    --header-transition: 0.6s cubic-bezier(.2, .8, .2, 1);
+    --font-main: "Catamaran", sans-serif;
+}
+
+html {
+    overflow-x: auto;
+    overflow-y: auto;
+    background: var(--page-bg);
+}
+
+body {
+    width: min(100%, 1870px);
+    min-height: 1800px;
+    margin: 0 auto;
+    overflow: visible;
+    background: var(--page-bg);
+}
+
+button {
+    font: inherit;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.site-header {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 12px 20px;
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    transform: translateX(-50%);
+    transition: height var(--header-transition), border-radius var(--header-transition);
+    animation: header-background-cycle var(--cycle-duration) linear infinite;
+}
+
+/* ============================================================
+   LOGO
+   ============================================================ */
+
+.logo-mark {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 96px;
+    aspect-ratio: 1;
+}
+
+.logo-mark::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: 50%;
+    backdrop-filter: blur(50px);
+}
+
+.logo {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    transform-origin: top;
+    transition: transform var(--header-transition), opacity 0.25s ease;
+}
+
+.nav-button {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    max-height: 44px;
+    padding: 10px 18px;
+    overflow: hidden;
+    color: #fff;
+    font-family: var(--font-main);
+    font-size: clamp(0.85rem, 1.2vw, 1rem);
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: 999px;
+    backdrop-filter: blur(50px);
+}
+
+.nav-button--cta {
+    color: #505050;
+    background: #F4B752;
+}
+
+.button-effect {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    z-index: -1;
+    width: 50px;
+    height: 50px;
+    background: #018c94;
+    border-radius: 999px;
+    transform: translate(-100%, -50%);
+    transition: transform 0.5s ease, width 0.5s ease;
+}
+
+.nav-button:hover {
+    color: #fff;
+}
+
+.nav-button:hover .button-effect {
+    width: 100%;
+    transform: translate(0, -50%);
+}
+
+/* ============================================================
+   BURGER BUTTON
+   ============================================================ */
+
+.nav-toggle {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    opacity: 0;
+}
+
+.nav-burger {
+    position: relative;
+    display: none;
+    width: 35px;
+    height: 30px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.nav-burger span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #fff;
+    border-radius: 2px;
+    transition:
+        top 0.5s ease,
+        opacity 0.3s ease,
+        transform 0.5s cubic-bezier(.8, .5, .2, 1.4);
+}
+
+.nav-burger span:nth-child(1) { top: 0; }
+.nav-burger span:nth-child(2) { top: 13px; }
+.nav-burger span:nth-child(3) { top: 26px; }
+
+.nav-toggle:not(:checked) + .nav-burger:hover span:nth-child(1) {
+    transform: rotate(-3deg) scaleY(1.1);
+}
+
+.nav-toggle:not(:checked) + .nav-burger:hover span:nth-child(2) {
+    transform: rotate(3deg) scaleY(1.1);
+}
+
+.nav-toggle:not(:checked) + .nav-burger:hover span:nth-child(3) {
+    transform: rotate(-4deg) scaleY(1.1);
+}
+
+.nav-toggle:checked + .nav-burger span:nth-child(1),
+.nav-toggle:checked + .nav-burger span:nth-child(3) {
+    top: 13px;
+}
+
+.nav-toggle:checked + .nav-burger span:nth-child(1) {
+    transform: rotate(45deg);
+}
+
+.nav-toggle:checked + .nav-burger span:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-toggle:checked + .nav-burger span:nth-child(3) {
+    transform: rotate(-45deg);
+}
+
+/* ============================================================
+   HERO BANNER
+   ============================================================ */
+
+.hero-banner {
+    position: relative;
+    width: min(100%, 1870px);
+    height: max(100vh, 400px);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#scene-object {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* ============================================================
+   ANIMATIONS HEADER & BUTTON APPEARANCE
+   ============================================================ */
+
+@keyframes header-background-cycle {
+    0%, 17%, 50%, 65%, 100% {
+        background: var(--header-day-bg);
+    }
+
+    8%, 58%, 60% {
+        background: var(--header-sunset-bg);
+    }
+}
+
+@keyframes mobile-menu-item {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ============================================================
+   RESPONSIVE | HEADER MOBILE
+   A partir de 850px, les boutons passent dans le menu burger.
+   ============================================================ */
+
+@media (max-width: 850px) {
+    .site-header {
+        top: 0;
+        width: 100%;
+        height: 84px;
+        padding: 10px 12px;
+        gap: 8px;
+        overflow: hidden;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        justify-content: center;
+        border-radius: 0 0 50px 50px;
+    }
+
+    .logo-mark {
+        width: 64px;
+    }
+
+    .nav-burger {
+        display: block;
+    }
+
+    .nav-actions {
+        flex-basis: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        height: 100vh;
+        padding-top: 16px;
+        gap: 16px;
+        overflow: hidden;
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    .nav-button {
+        flex: 1 1 auto;
+        max-width: 150px;
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    .site-header:has(.nav-toggle:checked) {
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    .site-header:has(.nav-toggle:checked) .nav-actions {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+
+    .site-header:has(.nav-toggle:checked) .nav-button {
+        animation: mobile-menu-item 0.45s ease forwards;
+    }
+
+    .site-header:has(.nav-toggle:checked) .nav-button:nth-child(1) { animation-delay: 0.12s; }
+    .site-header:has(.nav-toggle:checked) .nav-button:nth-child(2) { animation-delay: 0.18s; }
+    .site-header:has(.nav-toggle:checked) .nav-button:nth-child(3) { animation-delay: 0.24s; }
+    .site-header:has(.nav-toggle:checked) .nav-button:nth-child(4) { animation-delay: 0.30s; }
+    .site-header:has(.nav-toggle:checked) .nav-button:nth-child(5) { animation-delay: 0.36s; }
+}
+
+/* ============================================================
+   RESPONSIVE | HERO
+   Cas extremes pour eviter une scene mal cadree.
+   ============================================================ */
+
+@media (max-width: 850px) and (max-height: 1000px) {
+    .hero-banner {
+        max-height: 400px;
+    }
+}
+
+@media (max-height: 700px) and (min-width: 1090px) {
+    .hero-banner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 1000px;
+        overflow: hidden;
+        transform: translate(-50%, -50%);
+    }
+}

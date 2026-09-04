@@ -1,0 +1,503 @@
+:root {
+  /* Cycle global : toutes les animations de la scene utilisent cette duree. */
+  --cycle-duration: 50s;
+  --cycle-easing: linear;
+
+  /* Ciel de page : fond jour + calques coucher/lever et nuit en fondu. */
+  --sky-day: linear-gradient(to top, #f0dff4 0%, #c7d7f7 54%, #8bccf6 100%);
+  --sky-sunset: linear-gradient(to top, #8e81fc 0%, #ff817e 54%, #ffa610 100%);
+  --sky-night: linear-gradient(to top, #8de6ff 0%, #142773 54%, #0e0038 100%);
+  --sky-sunset-opacity: 1;
+  --sky-night-opacity: 1;
+
+  /*
+    Arc des astres :
+    M startX startY
+    A radiusX radiusY rotation largeArc sweep endX endY
+
+    startX/startY : depart de l'arc.
+    radiusX       : largeur du cercle ou de l'ellipse.
+    radiusY       : hauteur du cercle ou de l'ellipse.
+    rotation      : inclinaison de l'ellipse.
+    largeArc      : 0 = petit arc, 1 = grand arc.
+    sweep         : sens de lecture de l'arc.
+    endX/endY     : fin de l'arc.
+  */
+  --orbit-path: path("M 94.64 620 A 200 95 0 0 1 494.64 620");
+
+  /* Astres. */
+  --sun: #fff19c;
+  --sun-glow-1: rgba(255, 190, 70, 0.95);
+  --sun-glow-2: rgba(220, 20, 60, 0.58);
+  --moon-base: #ccedff;
+  --moon-detail: #635eb0;
+  --moon-glow-1: rgba(255, 255, 255, 0.88);
+  --moon-glow-2: rgba(230, 245, 255, 0.55);
+  --moon-glow-3: rgba(255, 255, 255, 0.28);
+
+  /* Couleurs jour. */
+  --day-mt-detail: #b59359;
+  --day-mt2-shadow: #000ea3;
+  --day-mt1-highlight: #ffe2f1;
+  --day-mt3-b-1: #cfe1ff;
+  --day-mt3-b-2: #c5beed;
+  --day-mt2-b-1: #c9cfff;
+  --day-mt2-b-2: #aba6d8;
+  --day-mt1-b-1: #9f8e9f;
+  --day-mt1-b-2: #865770;
+  --day-mt1-sn-1: #dbd9ff;
+  --day-mt1-sn-2: #b8b4db;
+  --day-mt1-sh-1: #fff;
+  --day-mt1-sh-2: #5767c2;
+  --day-mt-mask-1: #422373;
+  --day-mt-mask-2: #630000;
+  --day-lk-d: #3d4fbb;
+  --day-lk-mv: #ffd6f9;
+  --day-lk-mv-opacity: 0.5;
+  --day-lk-w-1: #b5b0e8;
+  --day-lk-w-2: #4f6ac5;
+  --day-lk-mask-1: #ffd29c;
+  --day-lk-mask-2: #a35eff;
+  --day-pl-1: #a78103;
+  --day-pl-2: #b3e200;
+  --day-pl-detail-1: #fff;
+  --day-pl-detail-2: #7d0086;
+  --day-pl-light: #fffcbb;
+  --day-pl-mask-1: #990b63;
+  --day-pl-mask-2: #590024;
+
+  /* Couleurs nuit. */
+  --night-mt-detail: #3b44a3;
+  --night-mt2-shadow: #7150ba;
+  --night-mt1-highlight: #43387d;
+  --night-mt3-b-1: #201f73;
+  --night-mt3-b-2: #350f7d;
+  --night-mt2-b-1: #190b38;
+  --night-mt2-b-2: #2f0c68;
+  --night-mt1-b-1: #211227;
+  --night-mt1-b-2: #0b0007;
+  --night-mt1-sn-1: #4c3a67;
+  --night-mt1-sn-2: #20102b;
+  --night-mt1-sh-1: #fff;
+  --night-mt1-sh-2: #5767c2;
+  --night-lk-d: #3d4fbb;
+  --night-lk-mv: #250077;
+  --night-lk-mv-opacity: 0.7;
+  --night-lk-w-1: #1d61b1;
+  --night-lk-w-2: #340062;
+  --night-pl-1: #070015ff;
+  --night-pl-2: #24001cff;
+  --night-pl-detail-1: #070015ff;
+  --night-pl-detail-2: #24001cff;
+
+  /* Intensite des masques lever/coucher. */
+  --mask-lake-opacity: 1;
+  --mask-mountain-opacity: 0.7;
+  --mask-plant-opacity: 0.5;
+}
+
+svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+#scene,
+.celestial-orbit,
+#sun,
+#moon {
+  overflow: visible;
+}
+
+/* ============================================================
+   CIEL
+   ============================================================ */
+
+.hero-banner {
+  background: var(--sky-day);
+}
+
+.hero-banner::before,
+.hero-banner::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  opacity: 0;
+}
+
+.hero-banner::before {
+  background: var(--sky-sunset);
+  animation: sky-sunset-cycle var(--cycle-duration) var(--cycle-easing) infinite;
+}
+
+.hero-banner::after {
+  background: var(--sky-night);
+  animation: sky-night-cycle var(--cycle-duration) var(--cycle-easing) infinite;
+}
+
+/* ============================================================
+   GRADIENTS
+   ============================================================ */
+
+/* Mountains */
+#mt3-b-fill-gradient stop:nth-of-type(1) { --day-stop: var(--day-mt3-b-1); --night-stop: var(--night-mt3-b-1); }
+#mt3-b-fill-gradient stop:nth-of-type(2) { --day-stop: var(--day-mt3-b-2); --night-stop: var(--night-mt3-b-2); }
+#mt2-b-fill-gradient stop:nth-of-type(1) { --day-stop: var(--day-mt2-b-1); --night-stop: var(--night-mt2-b-1); }
+#mt2-b-fill-gradient stop:nth-of-type(2) { --day-stop: var(--day-mt2-b-2); --night-stop: var(--night-mt2-b-2); }
+#mt1-b-fill-gradient stop:nth-of-type(1) { --day-stop: var(--day-mt1-b-1); --night-stop: var(--night-mt1-b-1); }
+#mt1-b-fill-gradient stop:nth-of-type(2) { --day-stop: var(--day-mt1-b-2); --night-stop: var(--night-mt1-b-2); }
+#mt1-sn-fill-gradient stop:nth-of-type(1) { --day-stop: var(--day-mt1-sn-1); --night-stop: var(--night-mt1-sn-1); }
+#mt1-sn-fill-gradient stop:nth-of-type(2) { --day-stop: var(--day-mt1-sn-2); --night-stop: var(--night-mt1-sn-2); }
+#mt1-sh-fill-gradient stop:nth-of-type(1) { --day-stop: var(--day-mt1-sh-1); --night-stop: var(--night-mt1-sh-1); }
+#mt1-sh-fill-gradient stop:nth-of-type(2) { --day-stop: var(--day-mt1-sh-2); --night-stop: var(--night-mt1-sh-2); }
+
+/* Lake */
+#lk-w-fill-gradient stop:nth-of-type(1) { --day-stop: var(--day-lk-w-1); --night-stop: var(--night-lk-w-1); }
+#lk-w-fill-gradient stop:nth-of-type(2) { --day-stop: var(--day-lk-w-2); --night-stop: var(--night-lk-w-2); }
+
+/* Plants */
+#pl-fill-gradient stop:nth-of-type(1) { --day-stop: var(--day-pl-1); --night-stop: var(--night-pl-1); }
+#pl-fill-gradient stop:nth-of-type(2) { --day-stop: var(--day-pl-2); --night-stop: var(--night-pl-2); }
+#pl-detail-fill-gradient stop:nth-of-type(1) { --day-stop: var(--day-pl-detail-1); --night-stop: var(--night-pl-detail-1); }
+#pl-detail-fill-gradient stop:nth-of-type(2) { --day-stop: var(--day-pl-detail-2); --night-stop: var(--night-pl-detail-2); }
+
+/* Sunrise / sunset masks */
+#mt-sunset-mask-fill-gradient stop:nth-of-type(1) { stop-color: var(--day-mt-mask-1); }
+#mt-sunset-mask-fill-gradient stop:nth-of-type(2) { stop-color: var(--day-mt-mask-2); }
+#lk-mask-fill-gradient stop:nth-of-type(1) { stop-color: var(--day-lk-mask-1); }
+#lk-mask-fill-gradient stop:nth-of-type(2) { stop-color: var(--day-lk-mask-2); }
+#pl-mask-fill-gradient stop:nth-of-type(1) { stop-color: var(--day-pl-mask-1); }
+#pl-mask-fill-gradient stop:nth-of-type(2) { stop-color: var(--day-pl-mask-2); }
+
+#mt3-b-fill-gradient stop,
+#mt2-b-fill-gradient stop,
+#mt1-b-fill-gradient stop,
+#mt1-sn-fill-gradient stop,
+#mt1-sh-fill-gradient stop,
+#lk-w-fill-gradient stop,
+#pl-fill-gradient stop,
+#pl-detail-fill-gradient stop {
+  stop-color: var(--day-stop);
+  animation: stop-cycle var(--cycle-duration) var(--cycle-easing) infinite;
+}
+
+/* ============================================================
+   ELEMENTS SVG
+   ============================================================ */
+
+#mt { clip-path: url(#mt-clip-path); }
+#lk { clip-path: url(#lk-clip-path); }
+#pl { clip-path: url(#pl-clip-path); }
+
+#orbit-path-guide {
+  d: var(--orbit-path);
+  display: none;
+  fill: none;
+  stroke: red;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+svg.show-orbit-guide #orbit-path-guide {
+  display: inline;
+}
+
+.celestial-orbit {
+  offset-path: var(--orbit-path);
+  offset-distance: 0%;
+  offset-rotate: 0deg;
+  transform-box: view-box;
+  transform-origin: 0 0;
+  will-change: transform;
+  animation-duration: var(--cycle-duration);
+  animation-timing-function: var(--cycle-easing);
+  animation-iteration-count: infinite;
+}
+
+#sun {
+  fill: var(--sun);
+  filter: drop-shadow(0 0 5px var(--sun-glow-1)) drop-shadow(0 0 18px var(--sun-glow-2));
+}
+
+#sun-orbit {
+  display: inline;
+  visibility: visible;
+  animation-name: sun-orbit, sun-visibility;
+}
+
+#moon {
+  filter:
+    drop-shadow(0 0 5px var(--moon-glow-1))
+    drop-shadow(0 0 16px var(--moon-glow-2))
+    drop-shadow(0 0 30px var(--moon-glow-3));
+}
+
+#moon-b { fill: var(--moon-base); }
+#moon-d { fill: var(--moon-detail); opacity: 0.2; }
+
+#moon-orbit {
+  display: inline;
+  visibility: visible;
+  animation-name: moon-orbit, moon-visibility;
+}
+
+/* Mountains */
+#mt3-b { fill: url(#mt3-b-fill-gradient); }
+#mt2-b { fill: url(#mt2-b-fill-gradient); }
+#mt1-b { fill: url(#mt1-b-fill-gradient); }
+#mt1-sn { fill: url(#mt1-sn-fill-gradient); }
+#mt1-sh { fill: url(#mt1-sh-fill-gradient); mix-blend-mode: multiply; }
+
+#mt3-d,
+#mt2-sn {
+  --day-fill: var(--day-mt-detail);
+  --night-fill: var(--night-mt-detail);
+  fill: var(--day-fill);
+  mix-blend-mode: overlay;
+  animation:
+    fill-cycle var(--cycle-duration) var(--cycle-easing) infinite,
+    mountain-detail-blend-cycle var(--cycle-duration) var(--cycle-easing) infinite;
+}
+
+#mt2-sh {
+  --day-fill: var(--day-mt2-shadow);
+  --night-fill: var(--night-mt2-shadow);
+  fill: var(--day-fill);
+  opacity: 0.2;
+  mix-blend-mode: multiply;
+  animation: fill-cycle var(--cycle-duration) var(--cycle-easing) infinite;
+}
+
+#mt1-hi {
+  --day-fill: var(--day-mt1-highlight);
+  --night-fill: var(--night-mt1-highlight);
+  fill: var(--day-fill);
+  animation: fill-cycle var(--cycle-duration) var(--cycle-easing) infinite;
+}
+
+#mt3-b-mask,
+#mt2-b-mask,
+#mt1-b-mask {
+  --mask-opacity: var(--mask-mountain-opacity);
+  display: inline;
+  opacity: 0;
+  fill: url(#mt-sunset-mask-fill-gradient);
+  mix-blend-mode: multiply;
+  animation: mask-cycle var(--cycle-duration) var(--cycle-easing) infinite;
+}
+
+/* Lake */
+#lk-w { fill: url(#lk-w-fill-gradient); }
+
+#lk-d {
+  --day-fill: var(--day-lk-d);
+  --night-fill: var(--night-lk-d);
+  fill: var(--day-fill);
+  opacity: 0.2;
+  mix-blend-mode: multiply;
+  animation: fill-cycle var(--cycle-duration) var(--cycle-easing) infinite;
+}
+
+#lk-mv {
+  --day-fill: var(--day-lk-mv);
+  --night-fill: var(--night-lk-mv);
+  --day-opacity: var(--day-lk-mv-opacity);
+  --night-opacity: var(--night-lk-mv-opacity);
+  fill: var(--day-fill);
+  fill-rule: evenodd;
+  opacity: var(--day-opacity);
+  mix-blend-mode: soft-light;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation:
+    lake-ripple-x 4.4s ease-in-out -1.7s infinite alternate,
+    fill-cycle var(--cycle-duration) var(--cycle-easing) infinite,
+    opacity-cycle var(--cycle-duration) var(--cycle-easing) infinite;
+}
+
+#lk-mask {
+  --mask-opacity: var(--mask-lake-opacity);
+  display: inline;
+  opacity: 0;
+  fill: url(#lk-mask-fill-gradient);
+  mix-blend-mode: multiply;
+  isolation: isolate;
+  animation: mask-cycle var(--cycle-duration) var(--cycle-easing) infinite;
+}
+
+/* Plants */
+#pl5-l3, #pl5-l2, #pl5-l1,
+#pl4-l3, #pl4-l2, #pl4-l1,
+#pl3-l4, #pl3-l3, #pl3-l2-b, #pl3-l1-b,
+#pl2-l4-b, #pl2-l3, #pl2-l2, #pl2-l1-b,
+#pl1-l3, #pl1-l2, #pl1-l1 {
+  fill: url(#pl-fill-gradient);
+}
+
+#pl3-l2-s, #pl3-l2-d, #pl3-l1-d,
+#pl2-l4-s, #pl2-l1-d {
+  fill: url(#pl-detail-fill-gradient);
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+
+#pl2-l4-d {
+  fill: var(--day-pl-light);
+  opacity: 0.2;
+  mix-blend-mode: screen;
+}
+
+.plant-leaf-mask {
+  --mask-opacity: var(--mask-plant-opacity);
+  display: inline;
+  opacity: 0;
+  fill: url(#pl-mask-fill-gradient);
+  isolation: isolate;
+  animation: mask-cycle var(--cycle-duration) var(--cycle-easing) infinite;
+}
+
+.plant-leaf-wrap {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: plant-sway-soft 3.8s ease-in-out infinite alternate;
+}
+
+#pl5-l1-wrap, #pl5-l2-wrap, #pl5-l3-wrap,
+#pl1-l1-wrap, #pl1-l2-wrap, #pl1-l3-wrap {
+  animation-duration: 3.4s;
+  animation-delay: -0.8s;
+}
+
+#pl4-l1-wrap, #pl4-l2-wrap, #pl4-l3-wrap,
+#pl2-l1-wrap, #pl2-l2-wrap, #pl2-l3-wrap, #pl2-l4-wrap {
+  animation-name: plant-sway-medium;
+  animation-duration: 4.4s;
+  animation-delay: -1.7s;
+}
+
+#pl3-l1-wrap, #pl3-l2-wrap, #pl3-l3-wrap, #pl3-l4-wrap {
+  animation-name: plant-sway-tall;
+  animation-duration: 5s;
+  animation-delay: -2.6s;
+}
+
+#pl5-l2-wrap, #pl4-l2-wrap, #pl3-l3-wrap,
+#pl2-l3-wrap, #pl1-l2-wrap {
+  animation-delay: -3.2s;
+}
+
+#pl5-l1-wrap, #pl4-l1-wrap, #pl3-l1-wrap,
+#pl2-l1-wrap, #pl1-l1-wrap {
+  animation-delay: -4.1s;
+}
+
+/* ============================================================
+   KEYFRAMES | CYCLE JOUR / NUIT
+
+   0%-17%   : aube, soleil monte et lune se couche.
+   17%-50%  : jour.
+   50%-67%  : coucher, soleil descend et lune monte.
+   67%-100% : nuit.
+   ============================================================ */
+
+@keyframes sky-sunset-cycle {
+  0%, 17%, 50%, 65%, 100% { opacity: 0; }
+  8%, 58%, 60% { opacity: var(--sky-sunset-opacity); }
+}
+
+@keyframes sky-night-cycle {
+  17%, 50% { opacity: 0; }
+  0%, 67%, 100% { opacity: var(--sky-night-opacity); }
+}
+
+@keyframes sun-orbit {
+  0% { offset-distance: 0%; }
+  17% { offset-distance: 25%; }
+  33% { offset-distance: 50%; }
+  50% { offset-distance: 75%; }
+  67%, 100% { offset-distance: 100%; }
+}
+
+@keyframes sun-visibility {
+  0%, 66% {
+    display: inline;
+    visibility: visible;
+  }
+
+  67%, 100% {
+    display: none;
+    visibility: hidden;
+  }
+}
+
+@keyframes moon-orbit {
+  0% { offset-distance: 75%; }
+  17% { offset-distance: 100%; }
+  18%, 50% { offset-distance: 0%; }
+  67% { offset-distance: 25%; }
+  83% { offset-distance: 50%; }
+  100% { offset-distance: 75%; }
+}
+
+@keyframes moon-visibility {
+  0%, 16%, 50%, 100% {
+    display: inline;
+    visibility: visible;
+  }
+
+  17%, 49% {
+    display: none;
+    visibility: hidden;
+  }
+}
+
+@keyframes mask-cycle {
+  0%, 17%, 50%, 65%, 100% { opacity: 0; }
+  8%, 58%, 60% { opacity: var(--mask-opacity); }
+}
+
+@keyframes mountain-detail-blend-cycle {
+  0%, 67%, 100% { mix-blend-mode: normal; }
+  17%, 50% { mix-blend-mode: overlay; }
+}
+
+@keyframes fill-cycle {
+  0%, 67%, 100% { fill: var(--night-fill); }
+  17%, 50% { fill: var(--day-fill); }
+}
+
+@keyframes stop-cycle {
+  0%, 67%, 100% { stop-color: var(--night-stop); }
+  17%, 50% { stop-color: var(--day-stop); }
+}
+
+@keyframes opacity-cycle {
+  0%, 67%, 100% { opacity: var(--night-opacity); }
+  17%, 50% { opacity: var(--day-opacity); }
+}
+
+/* ============================================================
+   KEYFRAMES | MOUVEMENTS LOCAUX
+   ============================================================ */
+
+@keyframes lake-ripple-x {
+  from { transform: translateX(-7px) scaleX(0.94); }
+  to { transform: translateX(7px) scaleX(1.08); }
+}
+
+@keyframes plant-sway-soft {
+  from { transform: rotate(-4deg) translateX(-0.8px); }
+  to { transform: rotate(4.2deg) translateX(0.8px); }
+}
+
+@keyframes plant-sway-medium {
+  from { transform: rotate(-5.5deg) translateX(-1.1px); }
+  to { transform: rotate(5.5deg) translateX(1.1px); }
+}
+
+@keyframes plant-sway-tall {
+  from { transform: rotate(-7deg) translateX(-1.4px); }
+  to { transform: rotate(7deg) translateX(1.4px); }
+}
